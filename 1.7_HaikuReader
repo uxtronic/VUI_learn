@@ -1,0 +1,157 @@
+/* eslint-disable  func-names */
+/* eslint-disable  no-console */
+
+const Alexa = require('ask-sdk-core');
+
+const GetNewFactHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'LaunchRequest'
+      || (request.type === 'IntentRequest');
+  },
+  handle(handlerInput) {
+    const factArr = data;
+    const factIndex = Math.floor(Math.random() * factArr.length);
+    const randomFact = factArr[factIndex];
+    const speechOutput = GET_FACT_MESSAGE + randomFact;
+
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .withSimpleCard(SKILL_NAME, randomFact)
+      .getResponse();
+  },
+};
+
+const HelpHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+      && request.intent.name === 'AMAZON.HelpIntent';
+  },
+  handle(handlerInput) {
+    return handlerInput.responseBuilder
+      .speak(HELP_MESSAGE)
+      .reprompt(HELP_REPROMPT)
+      .getResponse();
+  },
+};
+
+const ExitHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+      && (request.intent.name === 'AMAZON.CancelIntent'
+        || request.intent.name === 'AMAZON.StopIntent');
+  },
+  handle(handlerInput) {
+    return handlerInput.responseBuilder
+      .speak(STOP_MESSAGE)
+      .getResponse();
+  },
+};
+
+const SessionEndedRequestHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'SessionEndedRequest';
+  },
+  handle(handlerInput) {
+    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+
+    return handlerInput.responseBuilder.getResponse();
+  },
+};
+
+const ErrorHandler = {
+  canHandle() {
+    return true;
+  },
+  handle(handlerInput, error) {
+    console.log(`Error handled: ${error.message}`);
+
+    return handlerInput.responseBuilder
+      .speak('Sorry, an error occurred.')
+      .reprompt('Sorry, an error occurred.')
+      .getResponse();
+  },
+};
+
+const SKILL_NAME = 'Haiku Reader';
+const GET_FACT_MESSAGE = 'I have a haiku for you: ';
+const HELP_MESSAGE = 'You can say tell me a haiku...  or, you can say stop... What can I help you with?';
+const HELP_REPROMPT = 'You can ask me to tell a haiku or exit to stop. What can I help you with?';
+const STOP_MESSAGE = 'Goodbye!';
+
+const data = [
+  `The far curve of the waters.
+  Through trees. Peace there, but here.
+  Only peace over there.`,
+
+  `The plucked rose quickly fades.
+  The unplucked rose fades conquickly.
+  The same sun sees both wither.`,
+  
+  `When the stream bends, the river.
+  By moonlight when it’s silence.  
+  The trees hide it from me.`,
+  
+  `Only the sunflower watches.
+  The sun behind the hills.
+  Makes the hills nearer. Hasten.`,
+  
+  `Behind the hedge footsteps.
+  The first rain speaks again.
+  Then again crickets sing.`,
+  
+  `The orchard slopes, the road.
+  Is seen from where it ends.
+  Hopes are too much to have.`,
+  
+  `Look when the cherry flowers.
+  Have naught to do with us.
+  Sleep and the red is given.`,
+  
+  `Look the rice field still new.
+  Over the unbridled stretches.
+  Of the home we have not.`,
+  
+  `The child is dead. The god
+  For something else lies pleased.
+  The green earth lies between.`,
+  
+  `When the sunflower looks up,
+  And the grass is green, seek me.
+  And find me next to peace.`,
+  
+  `The soft odor of gardens.
+  From a great distance reaching.
+  The nostrils, and a sleep.`,
+  
+  `Many ask. Some are quiet.
+  Others still ask. The river.
+  Runs on past where they live.`,
+  
+  `No stranger passes here.
+  The moon is still above.
+  The surf & the road goes far.`,
+  
+  `Tyla! The grass is grassier.
+  Round where your life provides.
+  For silence & concision.`,
+
+  `The wild-fowl rise from waters.
+  The clouds pass making darkness.
+  Earth is true, we are sad.`
+];
+
+const skillBuilder = Alexa.SkillBuilders.custom();
+
+exports.handler = skillBuilder
+  .addRequestHandlers(
+    GetNewFactHandler,
+    HelpHandler,
+    ExitHandler,
+    SessionEndedRequestHandler
+  )
+  .addErrorHandlers(ErrorHandler)
+  .lambda();
